@@ -1,17 +1,18 @@
-FROM alpine:3.14
+FROM frrouting/frr:latest
 
-RUN apk --no-cache add quagga tini bash && \
-    rm -rf /var/cache/apk/* && \
-    touch /etc/quagga/zebra.conf && \
-    touch /etc/quagga/vtysh.conf && \
-    touch /etc/quagga/ospfd.conf && \
-    touch /etc/quagga/bgpd.conf && \
-    touch /etc/quagga/isisd.conf
+RUN apk add --no-cache iproute2 \
+    tcpdump \
+    iputils \
+    bash
 
-COPY scripts/runs.sh /
+RUN echo 'service integrated-vtysh-config' > /etc/frr/vtysh.conf
 
-RUN chmod +x /runs.sh && chmod 777 -R /etc/quagga
+RUN sed -i "s/zebra=no/zebra=yes/" /etc/frr/daemons && \
+    sed -i "s/bgpd=no/bgpd=yes/" /etc/frr/daemons && \
+    sed -i "s/ospfd=no/ospfd=yes/" /etc/frr/daemons && \
+    sed -i "s/isisd=no/isisd=yes/" /etc/frr/daemons
 
-ENTRYPOINT ["/sbin/tini", "--"]
+# your saved files persist even when you replace the machine
+VOLUME ["/root", "/etc/frr"]
 
-CMD ["/runs.sh"]
+CMD /usr/lib/frr/frrinit.sh start && exec bash
