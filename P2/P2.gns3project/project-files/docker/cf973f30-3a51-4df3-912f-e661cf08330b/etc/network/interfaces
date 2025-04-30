@@ -16,7 +16,7 @@
 # DHCP config for eth0
 #auto eth0
 #iface eth0 inet dhcp
-#	hostname router-2
+#	hostname router-1
 
 # Static config for eth1
 #auto eth1
@@ -29,4 +29,17 @@
 # DHCP config for eth1
 #auto eth1
 #iface eth1 inet dhcp
-#	hostname router-2
+#	hostname router-1
+
+# Static config for eth2
+#auto eth2
+#iface eth2 inet static
+#	address 192.168.2.2
+#	netmask 255.255.255.0
+#	gateway 192.168.2.1
+#	up echo nameserver 192.168.2.1 > /etc/resolv.conf
+
+# DHCP config for eth2
+#auto eth2
+#iface eth2 inet dhcp
+#	hostname router-1
