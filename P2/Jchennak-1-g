@@ -1,19 +1,27 @@
 #HOST 1
+# Assign an IP address to the eth1 interface (local network)
 ip addr add 30.1.1.1/24 dev eth1
 
 #router 1
+# Assign an IP address to eth0 (used as the transport network)
 ip addr add 10.1.1.1/24 dev eth0
+# Assign an IP address to eth1 (connected to the same local network as HOST 1)
 ip addr add 30.1.1.3/24 dev eth1
 
+# Create a VXLAN interface named vxlan10 with ID 10 and set the remote peer to 10.1.1.2
 ip link add name vxlan10 type vxlan id 10 remote 10.1.1.2 dstport 4789 dev eth0
 ip link set vxlan10 up
+# Assign an IP address to the VXLAN interface (virtual network 30.1.2.0/24)
 ip addr add 30.1.2.3/24 dev vxlan10
 
 
 #Cette commande pour afficher les informations de votre interface 
 ip link show vxlan10
 
+# Create a bridge named br0
+
 ip link add name br0 type bridge
 ip link set dev br0 up
+# Add the VXLAN interface and eth1 (connects to HOST 1) to the bridge
 ip link set vxlan10 master br0
 ip link set eth1 master br0
